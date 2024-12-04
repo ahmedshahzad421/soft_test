@@ -1,25 +1,42 @@
 name: Java Assignment 2 CI
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+
     steps:
-    - uses: actions/checkout@v3
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
     
+    # Step 2: Set up JDK 11
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'temurin'
-    
+
+    # Step 3: Download dependencies
+    - name: Download Dependencies
+      run: |
+        curl -fLo junit-jupiter-api-5.8.1.jar https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-api/5.8.1/junit-jupiter-api-5.8.1.jar
+        curl -fLo junit-jupiter-engine-5.8.1.jar https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.8.1/junit-jupiter-engine-5.8.1.jar
+        curl -fLo apiguardian-api-1.1.2.jar https://repo1.maven.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar
+        curl -fLo junit-platform-console-standalone-1.8.1.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.8.1/junit-platform-console-standalone-1.8.1.jar
+        
+
+    # Step 4: Compile Java files
     - name: Compile Java Files
       run: |
-        javac Assignment\ 2/src/LoginApp.java
-        javac Assignment\ 2/src/LoginAppTest.java
-    
+        javac -d . -cp ".;mysql-connector-j-9.0.0.jar;junit-jupiter-api-5.8.1.jar;junit-jupiter-engine-5.8.1.jar;apiguardian-api-1.1.2.jar" "Assignment 2/src/LoginApp.java" "Assignment 2/src/LoginAppTest.java"
+
+    # Step 5: Run Tests
     - name: Run Tests
-      run: java -cp "Assignment 2/src" LoginAppTest
+      run: |
+        java -cp ".;mysql-connector-j-9.0.0.jar;junit-platform-console-standalone-1.8.1.jar" org.junit.platform.console.ConsoleLauncher --class-path . --select-class LoginAppTest
