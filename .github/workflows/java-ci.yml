@@ -1,0 +1,25 @@
+name: Java Assignment 2 CI
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Compile Java Files
+      run: |
+        javac Assignment\ 2/src/LoginApp.java
+        javac Assignment\ 2/src/LoginAppTest.java
+    
+    - name: Run Tests
+      run: java -cp "Assignment 2/src" LoginAppTest
